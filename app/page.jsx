@@ -182,11 +182,15 @@ export default function Home() {
             href="#"
           ></a>
           <button
-            className="text-[#fff] bg-black rounded-md p-1 font-thin uppercase text-3xl cursor-pointer"
+            className="text-[#fff] bg-transparent rounded-md p-1 font-thin  text-3xl cursor-pointer"
             onClick={flipAllTiles}
           >
-            {" "}
-            |||{" "}
+            <img
+              src="/repeat.png"
+              alt="Repeat"
+              className="w-10 h-10"
+              style={{ filter: "invert(1)" }}
+            />
           </button>
         </nav>
         <section

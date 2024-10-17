@@ -2,7 +2,7 @@
 
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 
 gsap.registerPlugin(useGSAP);
 
@@ -14,6 +14,7 @@ export default function Home() {
 
   const [isFlipped, setIsFlipped] = useState(false);
   const boardRef = useRef(null);
+  const tilesRef = useRef([]);
 
   const createTiles = (row, col) => {
     const tile = document.createElement("div");
@@ -30,24 +31,26 @@ export default function Home() {
     return tile;
   };
 
-  const createBoard = () => {
+  const createBoard = useCallback(() => {
     if (boardRef.current) {
       boardRef.current.innerHTML = ""; // Clear existing content
+      tilesRef.current = [];
       for (let i = 0; i < ROWS; i++) {
         const row = document.createElement("div");
         row.className = "row";
 
         for (let j = 0; j < COLS; j++) {
-          row.appendChild(createTiles(i, j));
+          const tile = createTiles(i, j);
+          row.appendChild(tile);
+          tilesRef.current.push(tile);
         }
         boardRef.current.appendChild(row);
       }
     }
-  };
+  }, []);
 
-  const initializeTileAnimation = () => {
-    const tiles = document.querySelectorAll(".tile");
-    tiles.forEach((tile, index) => {
+  const initializeTileAnimation = useCallback(() => {
+    tilesRef.current.forEach((tile, index) => {
       let lastEnterTime = 0;
 
       tile.addEventListener("mouseenter", () => {
@@ -74,10 +77,7 @@ export default function Home() {
         }
       });
     });
-
-    const flipButton = document.getElementById("flipButton");
-    flipButton.addEventListener("click", () => flipAllTiles(tiles));
-  };
+  }, []);
 
   const animateTile = (tile, tilty) => {
     gsap
@@ -101,21 +101,23 @@ export default function Home() {
       );
   };
 
-  const flipAllTiles = (tiles) => {
-    setIsFlipped(!isFlipped);
-
-    gsap.to(tiles, {
-      rotateX: isFlipped ? 180 : 0,
-      duration: 1,
-      ease: "power2.inOut",
-      stagger: {
-        amount: 0.5,
-        from: "random",
-      },
+  const flipAllTiles = useCallback(() => {
+    setIsFlipped((prevIsFlipped) => {
+      const newIsFlipped = !prevIsFlipped;
+      gsap.to(tilesRef.current, {
+        rotateX: newIsFlipped ? 180 : 0,
+        duration: 1,
+        ease: "power2.inOut",
+        stagger: {
+          amount: 0.5,
+          from: "random",
+        },
+      });
+      return newIsFlipped;
     });
-  };
+  }, []);
 
-  const createBlocks = () => {
+  const createBlocks = useCallback(() => {
     const blocksContainer = document.getElementById("blocks");
     if (blocksContainer) {
       blocksContainer.innerHTML = ""; // Clear existing blocks
@@ -137,9 +139,9 @@ export default function Home() {
       return { numCols, numBlocks };
     }
     return { numCols: 0, numBlocks: 0 };
-  };
+  }, []);
 
-  const highlightBlock = (event) => {
+  const highlightBlock = useCallback((event) => {
     const { numCols } = window.blockInfo;
     const blocksContainer = document.getElementById("blocks");
     if (blocksContainer) {
@@ -158,7 +160,7 @@ export default function Home() {
         }, 250);
       }
     }
-  };
+  }, []);
 
   useEffect(() => {
     createBoard();
@@ -169,7 +171,7 @@ export default function Home() {
     return () => {
       document.removeEventListener("mousemove", highlightBlock);
     };
-  }, []);
+  }, [createBoard, initializeTileAnimation, createBlocks, highlightBlock]);
 
   return (
     <div className="relative w-screen h-screen">
@@ -183,7 +185,7 @@ export default function Home() {
           </a>
           <button
             className="text-[#fff] bg-black rounded-md p-3 font-extrabold uppercase text-3xl cursor-pointer"
-            id="flipButton"
+            onClick={flipAllTiles}
           >
             SEE THROUGH
           </button>

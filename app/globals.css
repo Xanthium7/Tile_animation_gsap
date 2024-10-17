@@ -56,13 +56,13 @@
 }
 
 .tile-front::before{
-  background-image: url("../public/img1.png");
+  background-image: url("../public/img5.png");
   /* background-size: cover; */
   /* background-position: center; */
 }
 
 .tile-back::before{
-  background-image: url("../public/img2.png");
+  background-image: url("../public/img6.png");
   /* background-size: cover; */
   /* background-position: center; */
 }

@@ -24,7 +24,7 @@ export default function Home() {
     <div class="tile-face tile-back"></div>
     `;
 
-    const bgPosition = `${col * 20}% ${row * 20}%`;
+    const bgPosition = `${col * 20}% ${row * 18}%`;
     tile.querySelector(".tile-front").style.backgroundPosition = bgPosition;
     tile.querySelector(".tile-back").style.backgroundPosition = bgPosition;
 
@@ -174,20 +174,19 @@ export default function Home() {
   }, [createBoard, initializeTileAnimation, createBlocks, highlightBlock]);
 
   return (
-    <div className="relative w-screen h-screen">
+    <div className="relative w-screen h-screen overflow-x-hidden">
       <div className="w-full h-full">
         <nav className="absolute top-0 left-0 w-screen flex justify-between items-center p-[2em] z-10 ">
           <a
             className="text-[#fff] font-extrabold uppercase text-3xl cursor-pointer"
             href="#"
-          >
-            EXPLORE
-          </a>
+          ></a>
           <button
-            className="text-[#fff] bg-black rounded-md p-3 font-extrabold uppercase text-3xl cursor-pointer"
+            className="text-[#fff] bg-black rounded-md p-1 font-thin uppercase text-3xl cursor-pointer"
             onClick={flipAllTiles}
           >
-            SEE THROUGH
+            {" "}
+            |||{" "}
           </button>
         </nav>
         <section
